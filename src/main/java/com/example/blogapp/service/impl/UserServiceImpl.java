@@ -6,9 +6,12 @@ import com.example.blogapp.payload.UserDTO;
 import com.example.blogapp.repositories.UserRepo;
 import com.example.blogapp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
+@Service
 public class UserServiceImpl implements UserService {
 
     @Autowired
@@ -24,23 +27,40 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO updateUser(UserDTO userDto, Integer userId) {
-        User user=this.userRepo.findById(userId).orElseThrow(()-> new ResourceNotFoundException("user","uid",userId));
-        return null;
+        //getUser
+        User user=this.userRepo.findById(userId).orElseThrow(
+                ()-> new ResourceNotFoundException("user","uid",userId));
+        //setUser
+        user.setName(userDto.getName());
+        user.setEmail(userDto.getEmail());
+        user.setPassword(userDto.getPassword());
+        user.setAbout(userDto.getAbout());
+
+        User updateUser=this.userRepo.save(user);
+        UserDTO userToDto1=this.userToDto(updateUser);
+
+        return userToDto1;
     }
 
     @Override
     public UserDTO getUserById(Integer userId) {
-        return null;
+        User user=this.userRepo.findById(userId).orElseThrow(
+                ()-> new ResourceNotFoundException("user","uid",userId));
+        return this.userToDto(user);
     }
 
     @Override
     public List<UserDTO> getAllUser() {
-        return null;
+        List<User> users=this.userRepo.findAll();
+        List<UserDTO> userDtos=users.stream().map(user -> this.userToDto(user)).collect(Collectors.toList());
+        return userDtos;
     }
 
     @Override
     public void deleteUser(Integer userId) {
-
+        User user=this.userRepo.findById(userId).orElseThrow(
+                ()->new ResourceNotFoundException("user","uid",userId));
+        this.userRepo.delete(user);
     }
 
     public User dtoToUser(UserDTO userDto) {

@@ -2,8 +2,10 @@ package com.example.blogapp.service;
 
 import com.example.blogapp.entity.User;
 import com.example.blogapp.payload.UserDTO;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
+
 
 public interface UserService {
 
